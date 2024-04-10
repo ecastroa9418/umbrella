@@ -48,3 +48,29 @@ next_hour_hash = next_hour_array.at(0)
 next_hour_summary = next_hour_hash.fetch("summary")
 
 puts "It is currently F°#{current_temp} and in the next hour will be #{next_hour_summary}"
+
+hourly_hash = parsed_response_weather.fetch("hourly")
+
+hourly_data_array = hourly_hash.fetch("data")
+
+next_twelve_hours = hourly_data_array[1..12]
+
+precip_prob_threshold = 0.10
+
+any_precipitation = false
+
+next_twelve_hours.each do |hour_hash|
+  precip_prob = hour_hash.fetch("precipProbability")
+
+  if precip_prob > precip_prob_threshold
+    any_precipitation = true
+
+    precip_time = Time.at(hour_hash.fetch("time"))
+
+    seconds_from_now = precip_time - Time.now
+
+    hours_from_now = seconds_from_now / 60 / 60
+
+    puts "In #{hours_from_now.round} hours, there is a #{(precip_prob * 100).round}% chance of precipitation."
+  end
+end
